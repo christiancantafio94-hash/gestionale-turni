@@ -1,0 +1,1395 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICTS Italia | Gestionale Turni</title>
+  <style>
+    :root{
+      --navy:#071b3d; --blue:#0b2e6d; --blue2:#1554c0; --red:#c8102e;
+      --bg:#eef3fb; --bg2:#f8fbff; --card:rgba(255,255,255,.92); --text:#102033;
+      --muted:#667789; --line:#d9e3ef; --soft:#eaf2ff; --ok:#027a48; --ok-bg:#ecfdf3;
+      --danger:#b42318; --danger-bg:#fff1f0; --warn:#b54708; --warn-bg:#fff7ed;
+      --shadow:0 18px 50px rgba(7,27,61,.12); --shadow2:0 8px 24px rgba(7,27,61,.08);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);background:
+      radial-gradient(circle at 10% 0%, rgba(21,84,192,.16), transparent 28%),
+      radial-gradient(circle at 90% 10%, rgba(200,16,46,.10), transparent 24%),
+      linear-gradient(180deg,var(--bg2),var(--bg)); min-height:100vh;}
+    .app{max-width:1680px;margin:0 auto;padding:22px}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.76);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter: blur(10px)}
+    .hero{position:relative;overflow:hidden;display:grid;grid-template-columns:1.35fr .8fr;gap:18px;padding:24px;margin-bottom:16px;background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(245,249,255,.92))}
+    .hero:before{content:"";position:absolute;inset:auto -60px -90px auto;width:300px;height:300px;border-radius:999px;background:rgba(11,46,109,.08)}
+    .brand{display:flex;gap:18px;align-items:center;position:relative;z-index:1}
+    .logo-wrap{width:176px;min-height:142px;border-radius:26px;background:#fff;border:1px solid #dce7f5;box-shadow:var(--shadow2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 12px;overflow:hidden;flex:0 0 auto}
+    .logo-wrap img{width:112px;height:72px;object-fit:contain;display:block}.logo-fallback{font-weight:950;color:var(--blue);font-size:22px;letter-spacing:.02em}
+    .creator-signature{display:block;text-align:center;font-size:10.5px;line-height:1.22;color:#0b2e6d;font-weight:800;letter-spacing:.25px;white-space:normal;width:100%;max-width:150px}
+    .creator-signature:before{content:"";display:block;width:74px;height:1px;background:#d8e3f2;margin:2px auto 6px}
+    body.dark .logo-wrap{background:#f8fafc;border-color:#334155}
+    body.dark .creator-signature{color:#0b2e6d}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900;background:var(--soft);color:var(--blue);border:1px solid #d6e6ff}
+    .eyebrow:before{content:"";width:8px;height:8px;border-radius:999px;background:var(--red)}
+    h1{margin:9px 0 5px;font-size:40px;line-height:1.02;letter-spacing:-.04em;color:var(--navy)}
+    .subtitle{margin:0;color:var(--muted);font-size:14px;max-width:820px;line-height:1.55}
+    .side{position:relative;z-index:1;border-radius:24px;padding:20px;background:linear-gradient(135deg,var(--navy),var(--blue2));color:#fff;box-shadow:var(--shadow2);display:grid;align-content:space-between;min-height:170px}
+    .side .label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.78;font-weight:800}.side .big{font-size:34px;font-weight:950;margin-top:6px}.side .tiny{color:rgba(255,255,255,.84);font-size:13px;line-height:1.45}
+    .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:16px}.toolbar .left,.toolbar .right{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .badge{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;font-size:12px;font-weight:800;color:var(--muted);box-shadow:0 3px 10px rgba(16,32,51,.03)}
+    button,.btn{border:0;border-radius:15px;padding:11px 15px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 8px 18px rgba(11,46,109,.18);transition:.15s ease}button:hover,.btn:hover{transform:translateY(-1px);filter:saturate(1.04)}button.secondary,.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line);box-shadow:0 6px 16px rgba(16,32,51,.05)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.stat{padding:18px 18px;position:relative;overflow:hidden}.stat:after{content:"";position:absolute;right:-22px;top:-28px;width:90px;height:90px;border-radius:999px;background:rgba(11,46,109,.06)}.stat .label{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em}.stat .value{font-size:31px;font-weight:950;margin-top:6px;color:var(--navy)}
+    .panel{padding:17px 18px;margin-bottom:16px}.controls{display:grid;grid-template-columns:minmax(260px,1fr) 190px auto auto auto auto;gap:10px;align-items:center}
+    input,select,textarea{width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit;outline:none;transition:.15s ease}input:focus,select:focus,textarea:focus{border-color:#9bc0ff;box-shadow:0 0 0 4px rgba(21,84,192,.10)}textarea{min-height:98px;resize:vertical}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}table{width:100%;border-collapse:separate;border-spacing:0;min-width:1680px;background:#fff}th,td{padding:9px;border-bottom:1px solid #edf2f7;vertical-align:top}th{background:#f7faff;position:sticky;top:0;z-index:3;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#425466;font-weight:950}.sticky-left{position:sticky;left:0;background:#fff;z-index:2}.sticky-right{position:sticky;right:0;background:#fbfdff;z-index:2;box-shadow:-8px 0 14px rgba(16,24,40,.05)}th.sticky-left,th.sticky-right{background:#f7faff;z-index:4}
+    .emp{min-width:230px;max-width:230px}.emp .name{font-weight:950;color:var(--navy)}.emp .email{font-size:11px;color:var(--muted);margin-top:4px;word-break:break-word}.day-box{border:1px solid var(--line);border-radius:16px;padding:9px;background:linear-gradient(180deg,#fff,#fbfdff);min-width:175px;box-shadow:0 4px 12px rgba(16,32,51,.03)}.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.day-box input[type=time]{padding:7px 6px;font-size:12px}.tiny{font-size:11px;color:var(--muted)}.date-badge{display:inline-flex;min-width:25px;height:25px;border-radius:999px;align-items:center;justify-content:center;background:var(--soft);color:var(--blue);font-weight:950;margin-left:5px}
+    .msg{padding:10px 12px;border-radius:14px;font-size:12px;margin-top:8px;font-weight:750;line-height:1.4}.ok{background:var(--ok-bg);color:var(--ok)} .err{background:var(--danger-bg);color:var(--danger)} .warn{background:var(--warn-bg);color:var(--warn)} .muted{background:#f8fafc;color:var(--muted)}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.summary .item{padding:15px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 6px 18px rgba(16,32,51,.04)}.bar{height:9px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-top:9px}.bar>div{height:100%;background:linear-gradient(90deg,var(--blue),var(--red))}
+    dialog{border:none;border-radius:24px;padding:0;box-shadow:0 24px 80px rgba(7,27,61,.28);width:min(940px,95vw)}dialog::backdrop{background:rgba(7,27,61,.48);backdrop-filter: blur(4px)}.modal{padding:22px;background:linear-gradient(180deg,#fff,#f8fbff)}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.modal-head h3{color:var(--navy);font-size:22px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}label{font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:6px}.employees-list{max-height:370px;overflow:auto;border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}.emp-row{display:grid;grid-template-columns:1.2fr 1fr 1.2fr auto;gap:8px;margin-bottom:8px}code{background:#f4f7fb;padding:2px 6px;border-radius:7px;color:var(--blue);font-weight:800}.note-list{padding-left:18px;color:var(--muted);margin:10px 0 0;line-height:1.55}
+
+    .day-focus-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .day-focus-tools select{min-width:150px}
+    .focus-day-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:rgba(11,46,109,.06);font-weight:900;color:var(--primary)}
+    body.dark .focus-day-title{background:rgba(59,130,246,.12);color:#bfdbfe}
+    .single-day-table table{min-width:760px}
+    .single-day-table .day-free-box{min-width:360px}
+    .single-day-table .free-turn{min-height:96px;font-size:14px;line-height:1.35}
+    .focus-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;background:var(--primary-soft);color:var(--primary);font-size:12px;font-weight:900}
+    @media print{.toolbar,.controls,#globalMessage,.summary,dialog{display:none!important}.app{padding:0}.card{box-shadow:none;border:0}.hero{padding:8px;margin:0}.table-wrap{overflow:visible}body{background:#fff}button{display:none}}
+    @media (max-width:1250px){.hero{grid-template-columns:1fr}.stats,.summary{grid-template-columns:1fr}.controls,.grid2,.grid3,.toolbar{grid-template-columns:1fr}.app{padding:12px}.brand{align-items:flex-start}.logo-wrap{width:164px;min-height:134px}.logo-wrap img{width:104px;height:68px}h1{font-size:31px}}
+
+    /* === FIX v6: layout adattivo e finestre sempre visibili === */
+    html{scroll-behavior:smooth}
+    body{overflow-x:hidden}
+    .app{width:100%;max-width:1500px;padding:14px}
+    .hero{grid-template-columns:minmax(0,1fr) minmax(260px,.45fr);padding:18px;gap:14px}
+    h1{font-size:clamp(26px,3vw,38px)}
+    .logo-wrap{width:132px;min-height:118px;border-radius:22px}.logo-wrap img{width:86px;height:62px}
+    .toolbar{grid-template-columns:1fr;gap:10px}.toolbar .left,.toolbar .right{width:100%}.toolbar .right{justify-content:flex-start}
+    button,.btn{padding:9px 11px;border-radius:13px;font-size:13px;white-space:nowrap}
+    .badge{padding:8px 10px;font-size:11px}
+    .stats{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.stat{padding:13px}.stat .value{font-size:clamp(22px,2.2vw,29px)}
+    .panel{padding:12px;margin-bottom:12px}.controls{grid-template-columns:minmax(220px,1fr) 170px repeat(4,auto);gap:8px}
+    input,select,textarea{padding:8px 9px;border-radius:12px;font-size:13px}textarea{min-height:78px}
+    .table-wrap{max-width:100%;overflow:auto;border-radius:16px}
+    table{min-width:1320px}
+    th,td{padding:6px}
+    .emp{min-width:180px;max-width:180px}.emp .name{font-size:13px}.emp .email{font-size:10px}
+    .day-box{min-width:128px;padding:7px;border-radius:13px}.day-grid{gap:5px}.day-box input[type=time]{padding:6px 4px;font-size:11px}.day-box select,.day-box input{font-size:12px;padding:7px 6px}.date-badge{min-width:21px;height:21px;font-size:11px}
+    .summary{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.summary .item{padding:12px}
+    dialog{width:min(940px,calc(100vw - 22px));max-height:calc(100dvh - 22px);overflow:hidden;border-radius:20px}
+    .modal{max-height:calc(100dvh - 22px);overflow:auto;padding:16px}
+    .modal-head{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#fff,#f8fbff);padding-bottom:10px;margin:-2px 0 12px;border-bottom:1px solid var(--line)}
+    .employees-list{max-height:min(48vh,390px)}
+    .grid2,.grid3{gap:8px}.emp-row{grid-template-columns:1.1fr 1fr 1fr auto;gap:6px}
+    @media (max-width:1100px){
+      .hero{grid-template-columns:1fr}.side{min-height:auto}.stats{grid-template-columns:repeat(3,1fr)}.summary{grid-template-columns:repeat(2,1fr)}
+      .controls{grid-template-columns:1fr 1fr}.controls button{width:100%}.toolbar .right>*{flex:1 1 auto}.toolbar .right button,.toolbar .right .btn{min-width:130px}
+      table{min-width:1250px}.day-box{min-width:120px}.emp{min-width:170px;max-width:170px}
+    }
+    @media (max-width:720px){
+      .app{padding:8px}.brand{align-items:flex-start}.logo-wrap{width:118px;min-height:108px}.logo-wrap img{width:76px;height:54px}.hero{padding:12px;border-radius:18px}.note-list{display:none}
+      .stats{grid-template-columns:repeat(2,1fr)}.summary{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.toolbar .left,.toolbar .right{gap:6px}.toolbar .right button,.toolbar .right .btn{width:100%;min-width:0}
+      .grid2,.grid3,.emp-row{grid-template-columns:1fr}.emp-row button{width:100%}
+      dialog{width:calc(100vw - 12px);max-height:calc(100dvh - 12px);border-radius:16px}.modal{padding:12px;max-height:calc(100dvh - 12px)}
+      table{min-width:1120px}.day-box{min-width:112px}.emp{min-width:150px;max-width:150px}
+    }
+
+
+    /* === v7: dettagli grafici aeroporto/aerei senza cambiare layout === */
+    body:before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.55;
+      background:
+        linear-gradient(120deg, transparent 0 62%, rgba(11,46,109,.045) 62.2% 62.6%, transparent 62.8%),
+        repeating-linear-gradient(90deg, transparent 0 70px, rgba(11,46,109,.025) 70px 72px, transparent 72px 140px);
+    }
+    .hero{isolation:isolate}
+    .hero:after{
+      content:"";position:absolute;right:24px;top:18px;width:220px;height:120px;opacity:.10;z-index:0;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 360'%3E%3Cpath fill='%230b2e6d' d='M594 176c-8-21-41-25-75-14L368 211 144 66c-9-6-21-7-31-2l-35 18 168 178-113 36-69-54-33 13 70 89c6 8 17 11 27 8l407-125c42-13 68-30 59-51z'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    .plane-chip{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 12px;border-radius:999px;background:rgba(11,46,109,.07);border:1px solid rgba(11,46,109,.10);color:var(--blue);font-size:12px;font-weight:900;position:relative;z-index:1}
+    .plane-chip svg{width:18px;height:18px;display:block;fill:currentColor}
+    .airport-visual{position:absolute;right:22px;bottom:18px;width:190px;height:72px;opacity:.22;pointer-events:none;z-index:0}
+    .airport-visual svg{width:100%;height:100%;display:block}
+    .side{overflow:hidden}
+    .side:before{content:"";position:absolute;right:-55px;top:-45px;width:170px;height:170px;border:1px solid rgba(255,255,255,.18);border-radius:999px}
+    .side:after{content:"✈";position:absolute;right:18px;bottom:12px;font-size:82px;line-height:1;color:rgba(255,255,255,.08);transform:rotate(-12deg);font-family:Arial,sans-serif}
+    .stat .label:before{content:"";display:inline-block;width:7px;height:7px;border-radius:999px;background:var(--red);margin-right:7px;vertical-align:1px;opacity:.85}
+    
+    /* === v9 miglioramenti funzionali === */
+    .shift-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:950;margin:0 0 6px;border:1px solid transparent}
+    .shift-MATTINA{background:#eaf2ff;color:#0b2e6d;border-color:#cfe0ff}.shift-POMERIGGIO{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.shift-SERA{background:#f5f3ff;color:#5b21b6;border-color:#ddd6fe}.shift-NOTTE{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}.shift-RIPOSO{background:#f1f5f9;color:#475569;border-color:#e2e8f0}.shift-FERIE{background:#ecfdf5;color:#047857;border-color:#bbf7d0}.shift-MALATTIA{background:#fff1f2;color:#be123c;border-color:#fecdd3}.shift-PC{background:#fefce8;color:#854d0e;border-color:#fde68a}.shift-PERSONALIZZATO{background:#f0fdfa;color:#0f766e;border-color:#99f6e4}
+    .dashboard-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.dash-card{padding:14px;border-radius:20px;background:linear-gradient(180deg,#fff,#f8fbff);border:1px solid var(--line);box-shadow:var(--shadow2)}.dash-card strong{font-size:22px;color:var(--navy)}.dash-card span{display:block;color:var(--muted);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+    .preview-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;white-space:pre-line;line-height:1.65;max-height:52vh;overflow:auto}
+    .action-stack{display:flex;flex-direction:column;gap:8px;min-width:130px}.action-stack button{width:100%}
+    .excel-help{background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5}
+    @media (max-width:1250px){.dashboard-mini{grid-template-columns:1fr 1fr}.action-stack{min-width:120px}}
+    @media (max-width:760px){.dashboard-mini{grid-template-columns:1fr}}
+
+
+    /* === v10: pagina adattata, tutto più compatto e visibile === */
+    :root{--radius:18px}
+    body{overflow-x:hidden;font-size:13px}
+    .app{max-width:100vw;width:100%;padding:8px}
+    .card{border-radius:18px}
+    .hero{padding:10px 12px;margin-bottom:8px;grid-template-columns:minmax(0,1fr) 250px;gap:10px;min-height:auto}
+    .brand{gap:10px}.logo-wrap{width:112px;min-height:102px;border-radius:16px}.logo-wrap img{width:72px;height:50px}
+    h1{font-size:clamp(24px,2.4vw,32px);margin:4px 0 0}.subtitle,.plane-chip{display:none!important}
+    .side{min-height:80px;padding:12px;border-radius:16px}.side .big{font-size:24px}.side .tiny{font-size:11px}.side .label{font-size:10px}
+    .toolbar{margin-bottom:8px;gap:6px}.toolbar .left,.toolbar .right{gap:6px}.badge{padding:6px 8px;font-size:10px}
+    button,.btn{padding:7px 9px;border-radius:10px;font-size:12px;line-height:1.15;box-shadow:none}
+    .stats{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:8px}.stat{padding:8px 10px;border-radius:14px}.stat .label{font-size:10px}.stat .value{font-size:20px;margin-top:2px}.stat:after{display:none}
+    .dashboard-mini{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:8px}.dash-card{padding:8px 10px;border-radius:14px}.dash-card strong{font-size:18px}.dash-card span{font-size:10px;margin-top:2px}
+    .panel{padding:8px;margin-bottom:8px;border-radius:16px}.controls{grid-template-columns:minmax(180px,1fr) 140px repeat(4,max-content);gap:6px}
+    input,select,textarea{padding:6px 7px;border-radius:9px;font-size:12px}textarea{min-height:62px}
+    .table-wrap{border-radius:14px;max-height:calc(100dvh - 330px);min-height:260px;overflow:auto}
+    table{min-width:1120px;table-layout:fixed}th,td{padding:4px}th{font-size:10px;line-height:1.15}.date-badge{min-width:18px;height:18px;font-size:10px;margin-left:2px}
+    .emp{min-width:132px!important;max-width:132px!important;width:132px}.emp .name{font-size:12px;line-height:1.2}.emp .email{font-size:9px;line-height:1.15}
+    .day-box{min-width:96px!important;padding:5px;border-radius:10px}.day-grid{grid-template-columns:1fr 1fr;gap:3px;margin-top:3px}.day-box select,.day-box input,.day-box input[type=time]{font-size:10px;padding:4px 3px;border-radius:7px}.day-box .tiny{font-size:9px}.shift-badge{padding:3px 5px;font-size:9px;margin-bottom:3px}
+    .sticky-right{width:104px}.action-stack{min-width:96px;gap:4px}.action-stack button{font-size:10px;padding:6px 6px}.msg{font-size:10px;padding:6px;margin-top:4px;border-radius:9px}
+    .summary{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.summary .item{padding:8px;border-radius:14px}.bar{height:6px;margin-top:5px}
+    dialog{width:min(880px,calc(100vw - 12px));max-height:calc(100dvh - 12px);border-radius:16px}.modal{padding:10px;max-height:calc(100dvh - 12px);overflow:auto}.modal-head{padding-bottom:6px;margin:0 0 8px}.modal-head h3{font-size:18px;margin:0}.grid2,.grid3{gap:6px}.employees-list{max-height:calc(100dvh - 250px);padding:6px}.emp-row{grid-template-columns:1.1fr 1fr 1fr auto;gap:5px}
+    .preview-box{max-height:calc(100dvh - 230px);padding:10px;font-size:12px}
+    @media (max-width:1366px){.table-wrap{max-height:calc(100dvh - 300px)}table{min-width:1060px}.day-box{min-width:88px!important}.emp{min-width:120px!important;max-width:120px!important;width:120px}.sticky-right{width:92px}.action-stack{min-width:84px}.controls{grid-template-columns:minmax(170px,1fr) 130px repeat(4,max-content)}button,.btn{font-size:11px;padding:7px 8px}}
+    @media (max-width:980px){.hero{grid-template-columns:1fr}.side{display:none}.stats{grid-template-columns:repeat(3,1fr)}.dashboard-mini{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr 1fr}.controls button{width:100%}.table-wrap{max-height:calc(100dvh - 360px)}.summary{grid-template-columns:1fr 1fr}.toolbar .right button,.toolbar .right .btn{flex:1 1 120px}}
+    @media (max-width:640px){.app{padding:6px}.hero{padding:8px}.stats,.dashboard-mini,.summary,.controls{grid-template-columns:1fr}.toolbar .left,.toolbar .right{display:grid;grid-template-columns:1fr 1fr;width:100%}.toolbar .right button,.toolbar .right .btn{width:100%;min-width:0}.table-wrap{max-height:calc(100dvh - 390px)}table{min-width:1000px}.grid2,.grid3,.emp-row{grid-template-columns:1fr}.emp-row button{width:100%}}
+
+  
+    /* v11: scrittura libera giornaliera */
+    .day-free-box{border:1px solid var(--line);border-radius:14px;padding:6px;background:linear-gradient(180deg,#fff,#fbfdff);min-width:150px;box-shadow:0 4px 12px rgba(16,32,51,.03)}
+    .free-turn{min-height:92px!important;resize:vertical;font-size:12px;line-height:1.35;padding:8px!important;border-radius:10px!important;background:#fff;white-space:pre-wrap}
+    .free-turn::placeholder{color:#94a3b8}
+    .free-hint{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.2}
+    @media (max-width:1366px){.day-free-box{min-width:130px!important}.free-turn{min-height:72px!important;font-size:11px;padding:6px!important}}
+    @media (max-width:980px){.day-free-box{min-width:120px!important}.free-turn{min-height:68px!important}}
+
+    /* === v12 PRO: tema giorno/notte, leggibilità scrittura, stampa e controlli === */
+    body.dark{
+      --navy:#e5eefb; --blue:#60a5fa; --blue2:#3b82f6; --red:#fb7185;
+      --bg:#020617; --bg2:#0f172a; --card:rgba(15,23,42,.94); --text:#e5eefb;
+      --muted:#aab8cc; --line:#334155; --soft:#10284e; --ok:#86efac; --ok-bg:#052e16;
+      --danger:#fca5a5; --danger-bg:#3f1d1d; --warn:#fdba74; --warn-bg:#3b260b;
+      --shadow:0 18px 50px rgba(0,0,0,.55); --shadow2:0 8px 24px rgba(0,0,0,.42);
+    }
+    body.dark .card, body.dark .modal{background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));border-color:#334155}
+    body.dark .hero{background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.92))}
+    body.dark .side{background:linear-gradient(135deg,#020617,#1d4ed8)}
+    body.dark .badge, body.dark button.secondary, body.dark .btn.secondary, body.dark .summary .item, body.dark .dash-card, body.dark .table-wrap, body.dark table, body.dark .sticky-left, body.dark .sticky-right, body.dark .day-free-box, body.dark .preview-box{background:#0f172a;color:var(--text);border-color:#334155}
+    body.dark th, body.dark th.sticky-left, body.dark th.sticky-right{background:#111c31;color:#cbd5e1}
+    body.dark input, body.dark select{background:#020617;color:#e5eefb;border-color:#475569}
+    .free-turn{background:#dde5ef!important;color:#0b1f3a!important;border:1px solid #9aaeca!important;font-weight:650}
+    .free-turn:focus{background:#ffffff!important;border-color:#0b2e6d!important;box-shadow:0 0 0 4px rgba(11,46,109,.14)!important}
+    body.dark .free-turn{background:#020617!important;color:#f8fafc!important;border-color:#64748b!important;font-weight:650}
+    body.dark .free-turn:focus{background:#0b1220!important;border-color:#60a5fa!important;box-shadow:0 0 0 4px rgba(96,165,250,.18)!important}
+    .cell-warning{outline:none;outline-offset:0}
+    .cell-error{outline:2px solid rgba(220,38,38,.55);outline-offset:1px}
+
+    .rest-r{background:#ffe4e6!important;border-color:#fb7185!important}
+    .rest-r .free-turn{background:#fff1f2!important;color:#9f1239!important;border-color:#fb7185!important}
+    .rest-pc{background:#e0f2fe!important;border-color:#38bdf8!important}
+    .rest-pc .free-turn{background:#f0f9ff!important;color:#075985!important;border-color:#38bdf8!important}
+    body.dark .rest-r{background:#4c0519!important;border-color:#fb7185!important}
+    body.dark .rest-r .free-turn{background:#3f0714!important;color:#fecdd3!important}
+    body.dark .rest-pc{background:#082f49!important;border-color:#38bdf8!important}
+    body.dark .rest-pc .free-turn{background:#0c4a6e!important;color:#e0f2fe!important;border-color:#38bdf8!important}
+    body.dark .rest-pc .free-turn{background:#331400!important;color:#fde68a!important}
+    .mattinale-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}
+    .mattinale-preview{border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:58vh;background:#fff}
+    body.dark .mattinale-preview{background:#020617;border-color:#334155}
+    .mattinale-sheet{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+    .mattinale-sheet th,.mattinale-sheet td{border:1px solid #111;padding:7px;vertical-align:middle}
+    .mattinale-sheet .title-row td{text-align:center;font-weight:900;font-size:16px;background:#e5e7eb;color:#111}
+    .mattinale-sheet .code-row td{text-align:center;font-weight:900;background:#f8fafc;color:#111}
+    .mattinale-sheet .section-row td{font-weight:900;background:#dbeafe;color:#0b2e6d;text-transform:uppercase}
+    .mattinale-sheet .empty-row td{color:#64748b;font-style:italic}
+    @media print{
+      body.print-mattinale .app{display:none!important}
+      body.print-mattinale #mattinaleDialog{display:block!important;position:static!important;width:100%!important;max-width:none!important;box-shadow:none!important;border:none!important}
+      body.print-mattinale #mattinaleDialog::backdrop{display:none!important}
+      body.print-mattinale #mattinaleDialog .modal-head, body.print-mattinale #mattinaleDialog .mattinale-actions, body.print-mattinale #mattinaleDialog select, body.print-mattinale #mattinaleDialog label{display:none!important}
+      body.print-mattinale #mattinaleDialog .modal{padding:0!important;max-height:none!important;overflow:visible!important}
+      body.print-mattinale .mattinale-preview{border:none!important;max-height:none!important;overflow:visible!important}
+      body.print-mattinale .mattinale-sheet{min-width:0!important;font-size:11px!important}
+    }
+    .print-title{display:none}
+    @media print{
+      .print-title{display:block;text-align:center;margin:8px 0 14px;font-size:20px;font-weight:900;color:#0b2e6d}
+      .free-turn{border:0!important;background:#fff!important;color:#000!important;min-height:auto!important;resize:none;overflow:visible}
+      .free-hint,.action-stack,.sticky-right,th.sticky-right{display:none!important}
+      table{min-width:0!important;font-size:10px} th,td{padding:4px!important}.emp{width:120px!important;min-width:120px!important;max-width:120px!important}
+    }
+
+  .hours-filter-hint{font-size:11px;color:var(--muted);margin-top:6px}
+  .app-footer-credit{text-align:center;font-size:12px;color:var(--muted);padding:10px 0 4px;letter-spacing:.2px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <section class="card hero">
+    <div>
+      <div class="brand">
+        <div class="logo-wrap">
+          <img src="Logo ICTS Italy.png" alt="Logo ICTS Italia" onerror="if(!this.dataset.fallback){this.dataset.fallback='online';this.src='https://i.ibb.co/HL9MkSKB/Logo-ICTS-Italy.png';}else{this.style.display='none';this.nextElementSibling.style.display='block';}" />
+          <div class="logo-fallback" style="display:none">ICTS</div>
+          <div class="creator-signature">Created by Christian Cantafio<br><span style="font-size:9.5px;opacity:.85">© 2026 · All rights reserved</span></div>
+        </div>
+        <div>
+          <h1>Gestionale Turni</h1>
+          <div class="plane-chip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.6 12.7c-.5-1.3-2.4-1.5-4.3-.9l-4.9 1.6-6.8-4.7c-.5-.3-1.1-.4-1.7-.1l-1.1.6 5.1 5.7-3.3 1.1-2-1.6-1 .4 2.2 3c.2.3.6.4 1 .3l12.9-3.9c2.5-.8 4.4-1.6 3.9-3.5Z"/></svg><span>Operatività aeroportuale · Verona</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side">
+      <div><div class="label">Stato invio email</div><div class="big" id="emailReadyLabel">Da configurare</div></div>
+      <div class="tiny">Gestione rapida degli invii ai dipendenti.</div>
+    </div>
+    <div class="airport-visual" aria-hidden="true">
+      <svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 112h384" stroke="%230b2e6d" stroke-width="10" stroke-linecap="round" opacity=".65"/>
+        <path d="M45 112h34M117 112h34M189 112h34M261 112h34M333 112h34" stroke="white" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+        <path d="M318 67c-5-11-23-13-42-7l-62 20-96-62c-5-3-11-4-16-1l-18 9 72 76-48 15-31-23-17 6 32 40c3 4 8 5 13 4l171-53c25-8 46-15 42-24Z" fill="%230b2e6d"/>
+      </svg>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="left">
+      <span class="badge" id="saveStatus">Salvato localmente</span>
+      <span class="badge" id="originBadge" style="display:none">Origine pagina: rilevamento in corso</span>
+      <span class="badge" id="libBadge" style="display:none">Libreria EmailJS: verifica in corso</span>
+    </div>
+    <div class="right">
+      <button class="secondary" id="homeBtn">Pagina iniziale</button>
+      <button class="secondary" id="themeToggle">🌙 Tema</button>
+      <button class="secondary" id="printWeekBtn">Stampa settimana</button>
+      <button class="secondary" id="mattinaleBtn">Mattinale</button>
+      <button class="secondary" id="exportMattinaleExcelBtn">Excel mattinale</button>
+      <button class="secondary" id="configBtn">Configura invio</button>
+      <button class="secondary" id="testConfigBtn">Test configurazione</button>
+      <button class="secondary" id="manageEmployeesBtn">Dipendenti</button>
+      <button class="secondary" id="sortEmployeesBtn">Ordina A-Z</button>
+      <label class="btn secondary" for="turnsExcelFile">Importa turni Excel</label>
+      <input id="turnsExcelFile" type="file" accept=".xlsx,.xls,.csv" hidden />
+      <button class="secondary" id="turnsTemplateBtn">Modello turni</button>
+      <label class="btn secondary" for="employeesCsvFile">Importa dipendenti CSV</label>
+      <input id="employeesCsvFile" type="file" accept=".csv,text/csv,.txt" hidden />
+      <button class="secondary" id="csvTemplateBtn">Scarica modello CSV</button>
+      <button class="secondary" id="exportBtn">Esporta backup</button>
+      <label class="btn secondary" for="importFile">Importa backup</label>
+      <input id="importFile" type="file" accept="application/json" hidden />
+      <button class="secondary" id="resetBtn">Reset settimana</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card stat"><div class="label">Dipendenti</div><div class="value" id="statEmployees">0</div><div class="tiny">Anagrafica attiva</div></div>
+    <div class="card stat"><div class="label">In turno oggi</div><div class="value" id="statToday">0</div><div class="tiny">Esclusi riposo, ferie, malattia, PC</div></div>
+    <div class="card stat"><div class="label">Ore settimana</div><div class="value" id="statHours">0</div><div class="tiny">Solo settimana attiva</div></div>
+    <div class="card stat"><div class="label">Email inviate</div><div class="value" id="statEmails">0</div><div class="tiny">Solo settimana attiva</div></div>
+    <div class="card stat"><div class="label">Settimana</div><div class="value" id="statWeek">Corrente</div><div class="tiny" id="weekRangeLabel"></div></div>
+  </div>
+
+  <div class="dashboard-mini">
+    <div class="dash-card"><strong id="dashCompiled">0</strong><span>Turni compilati</span></div>
+    <div class="dash-card"><strong id="dashMissingEmail">0</strong><span>Email mancanti</span></div>
+    <div class="dash-card"><strong id="dashStations">0</strong><span>Postazioni usate</span></div>
+    <div class="dash-card"><strong id="dashWarnings">0 / 0</strong><span>Stato settimana</span></div>
+  </div>
+
+  <div class="card panel">
+    <div class="controls">
+      <input id="searchInput" placeholder="Cerca dipendente, email o note" />
+      <select id="bulkShift"></select>
+      <input id="stationFilter" placeholder="Filtra postazione (Pax, Bhs, Forniture, Arrivi...)" />
+      <select id="hoursFilter" title="Filtra ore dipendenti">
+        <option value="ALL">Ore: tutti</option>
+        <option value="ZERO">Ore: 0h</option>
+        <option value="UNDER20">Ore: sotto 20h</option>
+        <option value="UNDER40">Ore: sotto 40h</option>
+        <option value="OVER40">Ore: sopra 40h</option>
+      </select>
+      <select id="dayFilter" title="Filtra giorno">
+        <option value="ALL">Tutti i giorni</option>
+        <option value="Lun">Lunedì</option>
+        <option value="Mar">Martedì</option>
+        <option value="Mer">Mercoledì</option>
+        <option value="Gio">Giovedì</option>
+        <option value="Ven">Venerdì</option>
+        <option value="Sab">Sabato</option>
+        <option value="Dom">Domenica</option>
+      </select>
+      <button class="secondary" id="prevDayBtn" title="Giorno precedente">← Giorno</button>
+      <button class="secondary" id="nextDayBtn" title="Giorno successivo">Giorno →</button>
+      <button class="secondary" id="applyAllBtn">Applica a tutti</button>
+      <button class="secondary" id="sendAllVisibleBtn">Invia visibili</button>
+      <button class="secondary" id="prevWeekBtn">Settimana precedente</button>
+      <button class="secondary" id="nextWeekBtn">Settimana successiva</button>
+    </div>
+    <div id="globalMessage" class="msg muted" style="margin-top:12px">Configura EmailJS per iniziare. Il sistema mostra errori dettagliati.</div>
+  </div>
+
+  <div class="card panel">
+    <div class="print-title">ICTS Italia · Turni settimanali</div>
+    <div id="focusDayTitle" class="focus-day-title" style="display:none"></div>
+    <div class="table-wrap" id="tableWrap"><table><thead id="weekHead"></thead><tbody id="weekBody"></tbody></table></div>
+  </div>
+</div>
+
+
+<dialog id="mattinaleDialog">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 style="margin:0">Mattinale giornaliero ICTS</h3>
+      <button class="secondary" id="closeMattinaleDialog">Chiudi</button>
+    </div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label>Giorno mattinale</label><select id="mattinaleDay"></select></div>
+      <div><label>Codice servizio</label><input value="SERVIZI EX ART 2 DM 85/99" readonly /></div>
+    </div>
+    <div class="mattinale-preview" id="mattinalePreview"></div>
+    <div class="mattinale-actions">
+      <button class="secondary" id="refreshMattinaleBtn">Aggiorna anteprima</button>
+      <button class="secondary" id="printMattinaleBtn">Stampa mattinale</button>
+      <button id="downloadMattinaleBtn">Scarica Excel</button>
+    </div>
+    <div class="tiny" style="margin-top:10px">R, PC, Riposo, Permesso, Ferie e Malattia vengono esclusi. Forniture, Facilitatore e Arrivi vengono riconosciuti automaticamente nel mattinale.</div>
+  </div>
+</dialog>
+
+<dialog id="configDialog">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 style="margin:0">Configurazione invio EmailJS</h3>
+      <button class="secondary" id="closeConfigDialog">Chiudi</button>
+    </div>
+    <div class="grid3">
+      <div><label>Public Key</label><input id="cfgPublicKey" placeholder="es. ABC123..." /></div>
+      <div><label>Service ID</label><input id="cfgServiceId" placeholder="es. service_xxxxxxx" /></div>
+      <div><label>Template ID</label><input id="cfgTemplateId" placeholder="es. template_xxxxxxx" /></div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div><label>Email di test</label><input id="cfgTestEmail" placeholder="tuamail@example.com" /></div>
+      <div><label>Nome test</label><input id="cfgTestName" value="Test invio" /></div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="tiny">Template consigliato:</div>
+      <textarea readonly>Ciao {{nome}},
+
+Ecco i tuoi turni:
+{{turni}}
+
+Note: {{note}}
+Ore totali: {{ore}}</textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button class="secondary" id="saveConfigBtn">Salva configurazione</button>
+      <button id="sendTestBtn">Invia email di test</button>
+    </div>
+    <div id="configMessage" class="msg muted" style="margin-top:12px">Inserisci i dati EmailJS e salva.</div>
+  </div>
+</dialog>
+
+<dialog id="employeesDialog">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 style="margin:0">Gestione dipendenti</h3>
+      <button class="secondary" id="closeEmployeesDialog">Chiudi</button>
+    </div>
+    <div class="grid2" style="margin-bottom:12px">
+      <input id="newName" placeholder="Nome e cognome" />
+      <input id="newEmail" placeholder="Email personale" />
+    </div>
+    <div style="margin-bottom:12px"><input id="newEmployeeNote" placeholder="Note dipendente" /></div>
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <div class="tiny">Puoi importare un elenco CSV con colonne: <strong>Nome</strong>, <strong>Email</strong>, <strong>Note</strong>.</div>
+      <button id="addEmployeeBtn">Aggiungi dipendente</button>
+    </div>
+    <div class="employees-list" id="employeesList"></div>
+  </div>
+</dialog>
+
+<dialog id="previewDialog">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 style="margin:0">Anteprima email</h3>
+      <button class="secondary" id="closePreviewDialog">Chiudi</button>
+    </div>
+    <div id="previewTitle" class="msg muted">Anteprima</div>
+    <div id="previewBody" class="preview-box"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="secondary" id="previewCloseBtn">Chiudi</button>
+      <button id="previewSendBtn">Invia questa email</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const STORAGE_KEY='gestionale_turni_emailjs_v2';
+const dayNames=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+const shifts={RIPOSO:{label:'Riposo',start:'',end:'',hours:0},MATTINA:{label:'Mattina',start:'06:00',end:'14:00',hours:8},POMERIGGIO:{label:'Pomeriggio',start:'14:00',end:'22:00',hours:8},SERA:{label:'Sera',start:'16:00',end:'22:00',hours:6},NOTTE:{label:'Notte',start:'22:00',end:'06:00',hours:8},FERIE:{label:'Ferie',start:'',end:'',hours:0},MALATTIA:{label:'Malattia',start:'',end:'',hours:0},PC:{label:'PC',start:'',end:'',hours:0},PERSONALIZZATO:{label:'Personalizzato',start:'',end:'',hours:0}};
+const shiftKeys=Object.keys(shifts);
+const defaultEmployees=Array.from({length:12},(_,i)=>({id:i+1,name:'Dipendente '+String(i+1).padStart(2,'0'),email:'',employeeNote:''}));
+let sendInProgress={};
+let previewEmployeeId=null;
+let state={
+  employees:defaultEmployees,
+  schedule:createDefaultSchedule(defaultEmployees),
+  sentEmails:{},
+  weeks:{},
+  search:'',
+  stationFilter:'',
+  hoursFilter:'ALL',
+  dayFilter:'ALL',
+  bulkShift:'MATTINA',
+  weekOffset:0,
+  emailConfig:{publicKey:'',serviceId:'',templateId:''},
+  theme:'auto'
+};
+
+function prefersDarkByTime(){ const h=new Date().getHours(); return h>=19 || h<7; }
+function applyTheme(){
+  const theme=state.theme || localStorage.getItem('gestionaleTheme') || 'auto';
+  const dark = theme==='dark' || (theme==='auto' && prefersDarkByTime());
+  document.body.classList.toggle('dark', dark);
+  const btn=document.getElementById('themeToggle');
+  if(btn) btn.textContent = dark ? '☀️ Tema' : '🌙 Tema';
+}
+function toggleTheme(){
+  const nowDark=document.body.classList.contains('dark');
+  state.theme = nowDark ? 'light' : 'dark';
+  localStorage.setItem('gestionaleTheme', state.theme);
+  saveState(); applyTheme();
+}
+function analyzeCellText(text){
+  const t=String(text||'').trim();
+  if(!t) return {level:'', msg:''};
+  return {level:'', msg:''};
+}
+
+function restClassForText(text){
+  const t=String(text||'').trim().toLowerCase();
+  if(!t) return '';
+  const compact=t.replace(/[^a-z0-9]/g,'');
+  if(compact==='r' || compact==='rip' || /\briposo\b/.test(t)) return ' rest-r';
+  if(compact==='pc' || /\bpermesso\b|\bperm\b|compensativo/.test(t)) return ' rest-pc';
+  return '';
+}
+
+function quickExpandText(text){
+  const v=String(text||'').trim().toLowerCase();
+  const map={matt:'04:00-12:00 Pax',mattina:'04:00-12:00 Pax',pom:'14:00-22:00 Pax',pomeriggio:'14:00-22:00 Pax',sera:'16:00-22:00 Pax',notte:'22:00-06:00 Bhs',rip:'Riposo',riposo:'Riposo',ferie:'Ferie',mal:'Malattia',pc:'PC'};
+  return map[v] || text;
+}
+
+function presetText(type='RIPOSO', start='', end='', location='', note=''){
+  const label=shifts[type]?.label || type || '';
+  const parts=[];
+  if(label && label!=='Personalizzato') parts.push(label);
+  if(start && end) parts.push(`${start} - ${end}`);
+  if(location) parts.push(location);
+  if(note) parts.push(note);
+  return parts.join(' | ');
+}
+function makeCell(type='RIPOSO', note='', start=null, end=null, location='', freeText=null){
+  const base=shifts[type] || shifts.RIPOSO;
+  const s=start ?? base.start, e=end ?? base.end, loc=location || '', nt=note || '';
+  return {type, start:s, end:e, location:loc, note:nt, freeText: freeText ?? ''};
+}
+function createDefaultSchedule(employees){
+  return Object.fromEntries(employees.map(emp=>[emp.id,Object.fromEntries(dayNames.map(d=>[d,makeCell()]))]));
+}
+function cellToFreeText(c){
+  if(!c) return '';
+  if(c.freeText !== undefined && String(c.freeText).trim()) return String(c.freeText);
+  return presetText(c.type || 'RIPOSO', c.start || '', c.end || '', c.location || '', c.note || '');
+}
+function normalizeSchedule(){
+  state.employees.forEach(emp=>{
+    if(!state.schedule[emp.id]) state.schedule[emp.id]=Object.fromEntries(dayNames.map(d=>[d,makeCell()]));
+    dayNames.forEach(day=>{
+      const c=state.schedule[emp.id][day] || {};
+      const type=c.type || 'RIPOSO';
+      const base=shifts[type] || shifts.RIPOSO;
+      state.schedule[emp.id][day]={type, start:c.start ?? base.start, end:c.end ?? base.end, location:c.location || '', note:c.note || '', freeText: cellToFreeText(c)};
+    });
+  });
+}
+function sortEmployeesAZ(){ state.employees.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'it',{sensitivity:'base'})); }
+function escapeHtml(s){ return String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escapeAttr(s){ return escapeHtml(s); }
+function cloneSchedule(obj){ return JSON.parse(JSON.stringify(obj || {})); }
+function ensureWeekArchive(){ if(!state.weeks || typeof state.weeks!=='object') state.weeks={}; }
+function storeActiveWeek(){
+  ensureWeekArchive();
+  const key=activeWeekKey();
+  state.weeks[key]={
+    schedule:cloneSchedule(state.schedule),
+    sentEmails:JSON.parse(JSON.stringify(state.sentEmails || {})),
+    savedAt:new Date().toISOString()
+  };
+}
+function loadActiveWeek(){
+  ensureWeekArchive();
+  const key=activeWeekKey();
+  const item=state.weeks[key];
+  if(item && item.schedule){
+    state.schedule=cloneSchedule(item.schedule);
+    state.sentEmails=JSON.parse(JSON.stringify(item.sentEmails || {}));
+  }else{
+    state.schedule=createDefaultSchedule(state.employees);
+    state.sentEmails={};
+    state.weeks[key]={schedule:cloneSchedule(state.schedule), sentEmails:{}, savedAt:new Date().toISOString()};
+  }
+  normalizeSchedule();
+}
+function saveState(){
+  storeActiveWeek();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  if(typeof uploadStateOnline === 'function') uploadStateOnline();
+  const el=document.getElementById('saveStatus');
+  if(el) el.textContent='Salvato ' + new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+}
+function loadState(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(!raw) return;
+  try{
+    const loaded=JSON.parse(raw);
+    state={...state,...loaded};
+    ensureWeekArchive();
+    const key=activeWeekKey();
+    if(!state.weeks[key] && state.schedule){
+      state.weeks[key]={schedule:cloneSchedule(state.schedule), sentEmails:JSON.parse(JSON.stringify(state.sentEmails || {})), savedAt:new Date().toISOString()};
+    }
+    loadActiveWeek();
+  }catch(e){ console.error(e); }
+}
+function changeWeek(step){
+  saveState();
+  state.weekOffset=(state.weekOffset||0)+step;
+  loadActiveWeek();
+  saveState();
+  renderAll();
+  const dates=getCurrentDateInfo();
+  setMessage('globalMessage','muted',`Settimana attiva: ${dates[0].fullLabel} - ${dates[6].fullLabel}. Le statistiche sopra sono riferite solo a questa settimana.`);
+}
+function setMessage(target, type, text){ const el=document.getElementById(target); el.className='msg ' + type; el.textContent=text; }
+function isoDate(d){
+  const x=new Date(d);
+  x.setHours(12,0,0,0);
+  return x.toISOString().slice(0,10);
+}
+function mondayForOffset(offset=state.weekOffset||0){
+  const now=new Date(), day=now.getDay(), monday=new Date(now), diff=(day===0?-6:1-day);
+  monday.setDate(now.getDate()+diff+(offset*7));
+  monday.setHours(0,0,0,0);
+  return monday;
+}
+function activeWeekKey(offset=state.weekOffset||0){ return isoDate(mondayForOffset(offset)); }
+function getCurrentDateInfo(){
+  const monday=mondayForOffset(state.weekOffset||0);
+  return dayNames.map((label,idx)=>{
+    const date=new Date(monday);
+    date.setDate(monday.getDate()+idx);
+    return {label,dayNumber:date.getDate(),iso:isoDate(date),fullLabel:date.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})};
+  });
+}
+function todayLabel(){ const now=new Date(); return dayNames[now.getDay()===0?6:now.getDay()-1]; }
+function minutesFromHHMM(v){ if(!v || !/^\d{2}:\d{2}$/.test(v)) return null; const [h,m]=v.split(':').map(Number); return h*60+m; }
+function hoursBetween(start,end){ const s=minutesFromHHMM(start), e=minutesFromHHMM(end); if(s===null || e===null) return 0; let diff=e-s; if(diff<0) diff+=24*60; return Math.round((diff/60)*100)/100; }
+function formatHours(n){ return Number.isInteger(n)?String(n):String(n).replace('.',','); }
+function shiftTiming(cell){ return cell?.start && cell?.end ? `${cell.start} - ${cell.end}` : '—'; }
+function hoursFromFreeText(text){
+  const t=String(text||'').replace(/\b(\d{1,2})\.(\d{2})\b/g,'$1:$2');
+  const re=/(\d{1,2}):(\d{2})\s*[-–]\s*(\d{1,2}):(\d{2})/g;
+  let m,total=0;
+  while((m=re.exec(t))){
+    const s=Number(m[1])*60+Number(m[2]), e=Number(m[3])*60+Number(m[4]);
+    let diff=e-s; if(diff<0) diff+=24*60; total+=diff/60;
+  }
+  return Math.round(total*100)/100;
+}
+function shiftHours(cell){
+  if(!cell) return 0;
+  if(cell.freeText !== undefined && String(cell.freeText).trim()) return hoursFromFreeText(cell.freeText);
+  if(['RIPOSO','FERIE','MALATTIA','PC'].includes(cell.type)) return 0;
+  return hoursBetween(cell.start, cell.end) || shifts[cell.type]?.hours || 0;
+}
+function weeklyTotal(empId){ return Math.round(dayNames.reduce((sum,d)=>sum+shiftHours(state.schedule[empId]?.[d]),0)*100)/100; }
+function filteredEmployees(){
+  const q=(state.search||'').trim().toLowerCase();
+  const station=(state.stationFilter||'').trim().toLowerCase();
+  const hf=state.hoursFilter || 'ALL';
+  return state.employees.filter(e=>{
+    const scheduleText=dayNames.map(d=>cellToFreeText(state.schedule[e.id]?.[d])).join(' ').toLowerCase();
+    const textOk=!q || [e.name,e.email,e.employeeNote||'',scheduleText].some(v=>String(v).toLowerCase().includes(q));
+    const stationOk=!station || scheduleText.includes(station);
+    const total=weeklyTotal(e.id);
+    let hoursOk=true;
+    if(hf==='ZERO') hoursOk=total===0;
+    if(hf==='UNDER20') hoursOk=total>0 && total<20;
+    if(hf==='UNDER40') hoursOk=total>0 && total<40;
+    if(hf==='OVER40') hoursOk=total>40;
+    return textOk && stationOk && hoursOk;
+  });
+}
+
+function buildMailBody(emp){
+  const weekDates=getCurrentDateInfo();
+  return weekDates.map(info=>{
+    const cell=state.schedule[emp.id]?.[info.label] || makeCell();
+    const text=cellToFreeText(cell).trim() || '—';
+    const ore=shiftHours(cell);
+    const oreText=ore?` | Ore: ${formatHours(ore)}h`:'';
+    return `${info.label} ${info.dayNumber}: ${text.replace(/\n+/g,' | ')}${oreText}`;
+  }).join('\n');
+}
+function emailConfigReady(){ const c=state.emailConfig || {}; return !!(c.publicKey && c.serviceId && c.templateId); }
+function ensureEmailJsReady(){
+  if(typeof emailjs === 'undefined'){ throw new Error('La libreria EmailJS non è stata caricata. Controlla internet o il blocco del browser.'); }
+  if(!emailConfigReady()){ throw new Error('Configurazione EmailJS incompleta. Inserisci Public Key, Service ID e Template ID.'); }
+  emailjs.init({ publicKey: state.emailConfig.publicKey });
+}
+function explainEmailError(err){
+  const raw = err?.text || err?.message || err?.status || JSON.stringify(err);
+  const text = String(raw || 'Errore sconosciuto');
+  if(text.includes('412')) return 'Permessi Gmail insufficienti. Ricollega Gmail in EmailJS e accetta tutti i permessi.';
+  if(text.includes('400')) return 'Richiesta rifiutata da EmailJS. Di solito dipende da Service ID, Template ID o variabili del template sbagliate.';
+  if(text.includes('401')) return 'Public Key non valida o configurazione non autorizzata.';
+  if(text.includes('403')) return 'Accesso negato dal servizio email. Controlla il collegamento Gmail/Outlook.';
+  if(text.toLowerCase().includes('network')) return 'Problema di rete. Controlla connessione internet o firewall.';
+  return text;
+}
+async function testConfiguration(){
+  try{
+    ensureEmailJsReady();
+    setMessage('globalMessage','warn','Configurazione EmailJS trovata. Uso libreria pronto. Per un test completo usa "Invia email di test".');
+    setMessage('configMessage','ok','Configurazione valida in memoria. Ora puoi inviare una mail di test.');
+    renderBadges();
+  }catch(err){
+    setMessage('globalMessage','err',explainEmailError(err));
+    setMessage('configMessage','err',explainEmailError(err));
+  }
+}
+async function sendTestEmail(){
+  const to=document.getElementById('cfgTestEmail').value.trim();
+  const nome=document.getElementById('cfgTestName').value.trim() || 'Test invio';
+  if(!to){ setMessage('configMessage','err','Inserisci un indirizzo email di test.'); return; }
+  try{
+    ensureEmailJsReady();
+    await emailjs.send(state.emailConfig.serviceId, state.emailConfig.templateId, {
+      to_email: to,
+      nome,
+      turni: 'Lun 01: Mattina (06:00 - 14:00)\nMar 02: Riposo\nMer 03: Pomeriggio (14:00 - 22:00)',
+      note: 'Questa è una mail di test del gestionale.',
+      ore: '16h'
+    });
+    setMessage('configMessage','ok','Email di test inviata correttamente.');
+    setMessage('globalMessage','ok','Configurazione EmailJS funzionante. Ora puoi inviare i turni veri.');
+  }catch(err){
+    console.error('ERRORE TEST EMAILJS', err);
+    setMessage('configMessage','err',explainEmailError(err));
+    setMessage('globalMessage','err',explainEmailError(err));
+  }
+}
+
+function previewEmail(empId){
+  const emp=state.employees.find(x=>x.id===empId);
+  if(!emp) return;
+  previewEmployeeId=empId;
+  document.getElementById('previewTitle').textContent=`Destinatario: ${emp.name} ${emp.email ? '· '+emp.email : '· email mancante'}`;
+  document.getElementById('previewBody').textContent=`Ciao ${emp.name},\n\nEcco i tuoi turni:\n${buildMailBody(emp)}\n\nNote: ${emp.employeeNote || '—'}\nOre totali: ${formatHours(weeklyTotal(emp.id))}h`;
+  document.getElementById('previewDialog').showModal();
+}
+async function sendEmail(empId){
+  const emp=state.employees.find(x=>x.id===empId);
+  if(!emp){ return; }
+  if(!emp.email){ alert('Inserisci prima l\'email del dipendente'); return; }
+  try{ ensureEmailJsReady(); }catch(err){ setMessage('globalMessage','err',explainEmailError(err)); alert(explainEmailError(err)); return; }
+  sendInProgress[empId]=true; renderTable();
+  try{
+    await emailjs.send(state.emailConfig.serviceId, state.emailConfig.templateId, {
+      to_email: emp.email,
+      nome: emp.name,
+      turni: buildMailBody(emp),
+      note: emp.employeeNote || '—',
+      ore: formatHours(weeklyTotal(emp.id))+'h'
+    });
+    state.sentEmails[empId]={status:'sent', at:new Date().toLocaleString('it-IT'), message:'Inviata'};
+    saveState();
+    setMessage('globalMessage','ok',`Email inviata a ${emp.name}.`);
+  }catch(err){
+    console.error('ERRORE EMAILJS', err);
+    const msg=explainEmailError(err);
+    state.sentEmails[empId]={status:'error', at:new Date().toLocaleString('it-IT'), message:msg};
+    saveState();
+    setMessage('globalMessage','err',msg);
+    alert('Errore invio: ' + msg);
+  }finally{ delete sendInProgress[empId]; renderAll(); }
+}
+async function sendAllVisible(){
+  const list=filteredEmployees().filter(emp=>emp.email);
+  if(!list.length){ alert('Nessun dipendente visibile con email compilata.'); return; }
+  for(const emp of list){ await sendEmail(emp.id); }
+}
+function renderStatus(empId){
+  if(sendInProgress[empId]) return `<div class="msg warn">Invio in corso...</div>`;
+  const item=state.sentEmails[empId];
+  if(!item) return `<div class="msg muted">Non inviato</div>`;
+  if(item.status==='sent') return `<div class="msg ok">Inviato: ${escapeHtml(item.at)}</div>`;
+  return `<div class="msg err">${escapeHtml(item.message || 'Errore')}</div>`;
+}
+function renderStats(){
+  const current=todayLabel();
+  const todaysActive=state.employees.filter(e=>{ const type=state.schedule[e.id]?.[current]?.type; return type && !['RIPOSO','FERIE','MALATTIA','PC'].includes(type); }).length;
+  const filtered=filteredEmployees();
+  document.getElementById('statEmployees').textContent=state.employees.length;
+  document.getElementById('statToday').textContent=todaysActive;
+  document.getElementById('statHours').textContent=formatHours(Math.round(filtered.reduce((s,e)=>s+weeklyTotal(e.id),0)*100)/100);
+  document.getElementById('statEmails').textContent=Object.values(state.sentEmails).filter(x=>x?.status==='sent').length;
+  document.getElementById('statWeek').textContent=state.weekOffset===0?'Corrente':(state.weekOffset>0?`+${state.weekOffset}`:`${state.weekOffset}`);
+  const dates=getCurrentDateInfo();
+  document.getElementById('weekRangeLabel').textContent=`${dates[0].fullLabel} - ${dates[6].fullLabel}`;
+  document.getElementById('emailReadyLabel').textContent=emailConfigReady()?'Pronto all\'invio':'Da configurare';
+  renderDashboardMini(filtered);
+}
+
+function renderDashboardMini(list){
+  let compiled=0, total=0; const stations=new Set();
+  list.forEach(emp=>dayNames.forEach(d=>{
+    total++;
+    const c=state.schedule[emp.id]?.[d] || makeCell();
+    const text=cellToFreeText(c).trim();
+    if(text) compiled++;
+    ['pax','bhs','varco','dogana','arrivi','check-in','gate'].forEach(k=>{ if(text.toLowerCase().includes(k)) stations.add(k); });
+  }));
+  const missingEmail=list.filter(e=>!String(e.email||'').trim()).length;
+  document.getElementById('dashCompiled').textContent=compiled;
+  document.getElementById('dashMissingEmail').textContent=missingEmail;
+  document.getElementById('dashStations').textContent=stations.size;
+  document.getElementById('dashWarnings').textContent=`${compiled} / ${total}`;
+}
+function renderSummary(){ /* v14: resoconto dipendenti rimosso, sostituito dal filtro ore compatto. */ }
+function renderEmployeesList(){
+  document.getElementById('employeesList').innerHTML=state.employees.map(emp=>`<div class="emp-row"><input data-role="emp-name" data-id="${emp.id}" value="${escapeAttr(emp.name)}" placeholder="Nome e cognome" /><input data-role="emp-email" data-id="${emp.id}" value="${escapeAttr(emp.email||'')}" placeholder="Email personale" /><input data-role="emp-note" data-id="${emp.id}" value="${escapeAttr(emp.employeeNote||'')}" placeholder="Note dipendente" /><button class="secondary" onclick="deleteEmployee(${emp.id})">Elimina</button></div>`).join('');
+}
+function currentDayFilter(){ return state.dayFilter || 'ALL'; }
+function selectedWeekDates(){
+  const dates=getCurrentDateInfo();
+  const f=currentDayFilter();
+  return f==='ALL' ? dates : dates.filter(d=>d.label===f);
+}
+function dayLabelLong(short){
+  return ({Lun:'Lunedì',Mar:'Martedì',Mer:'Mercoledì',Gio:'Giovedì',Ven:'Venerdì',Sab:'Sabato',Dom:'Domenica'}[short] || short);
+}
+function moveDayFilter(step){
+  const order=['ALL',...dayNames];
+  let idx=order.indexOf(currentDayFilter());
+  if(idx<1) idx=1;
+  idx += step;
+  if(idx<1) idx=dayNames.length;
+  if(idx>dayNames.length) idx=1;
+  state.dayFilter=order[idx];
+  const el=document.getElementById('dayFilter');
+  if(el) el.value=state.dayFilter;
+  saveState();
+  renderAll();
+}
+function renderFocusDayTitle(weekDates){
+  const box=document.getElementById('focusDayTitle');
+  const wrap=document.getElementById('tableWrap');
+  if(!box) return;
+  const f=currentDayFilter();
+  if(f==='ALL'){
+    box.style.display='none';
+    if(wrap) wrap.classList.remove('single-day-table');
+    return;
+  }
+  const d=weekDates[0];
+  box.style.display='flex';
+  if(wrap) wrap.classList.add('single-day-table');
+  box.innerHTML=`<span>Vista giorno: ${dayLabelLong(f)} <span class="date-badge">${d?.dayNumber || ''}</span></span><span class="focus-badge">Correggi solo questo giorno</span>`;
+}
+function renderTable(){
+  const weekDates=selectedWeekDates();
+  renderFocusDayTitle(weekDates);
+  const single=currentDayFilter()!=='ALL';
+  const dayHeaders=weekDates.map(d=>`<th>${single?dayLabelLong(d.label):d.label} <span class="date-badge">${d.dayNumber}</span></th>`).join('');
+  document.getElementById('weekHead').innerHTML=`<tr><th class="sticky-left">Dipendente</th>${dayHeaders}<th>Note</th><th>Ore</th><th class="sticky-right">Azioni</th></tr>`;
+  document.getElementById('weekBody').innerHTML=filteredEmployees().map(emp=>{
+    const cells=weekDates.map(info=>{
+      const cell=state.schedule[emp.id]?.[info.label] || makeCell();
+      const text=cellToFreeText(cell);
+      const check=analyzeCellText(text);
+      const cls=(check.level==='warn'?' cell-warning':(check.level==='err'?' cell-error':'')) + restClassForText(text);
+      return `<td data-day="${info.label}"><div class="day-free-box${cls}"><textarea class="free-turn" data-role="free-text" data-id="${emp.id}" data-day="${info.label}" placeholder="Scrivi liberamente:\n04:15-12:30 Pax\nPC mattina\nFerie / Riposo\nNote extra...">${escapeHtml(text)}</textarea><div class="free-hint">${check.msg || (single ? 'Vista singolo giorno · scrivi liberamente' : 'Campo libero · abbreviazioni: matt, pom, rip, pc')}</div></div></td>`;
+    }).join('');
+    const total = single ? shiftHours(state.schedule[emp.id]?.[weekDates[0]?.label]) : weeklyTotal(emp.id);
+    return `<tr><td class="emp sticky-left"><div class="name">${escapeHtml(emp.name)}</div><div class="email">${escapeHtml(emp.email||'Nessuna email')}</div></td>${cells}<td><input data-role="emp-note-main" data-id="${emp.id}" value="${escapeAttr(emp.employeeNote||'')}" placeholder="Note dipendente" /></td><td style="text-align:center;font-weight:900">${formatHours(total)}h</td><td class="sticky-right"><div class="action-stack"><button class="secondary" onclick="previewEmail(${emp.id})">Anteprima</button><button onclick="sendEmail(${emp.id})" ${sendInProgress[emp.id]?'disabled':''}>Invia turni</button></div>${renderStatus(emp.id)}</td></tr>`;
+  }).join('');
+}
+
+function renderBadges(){
+  document.getElementById('originBadge').textContent = location.protocol === 'file:' ? 'Origine pagina: file:// (meglio usare server locale)' : 'Origine pagina: ' + location.origin;
+  document.getElementById('libBadge').textContent = typeof emailjs === 'undefined' ? 'Libreria EmailJS: non caricata' : 'Libreria EmailJS: caricata';
+}
+function renderConfig(){
+  document.getElementById('cfgPublicKey').value=state.emailConfig.publicKey||'';
+  document.getElementById('cfgServiceId').value=state.emailConfig.serviceId||'';
+  document.getElementById('cfgTemplateId').value=state.emailConfig.templateId||'';
+}
+function renderAll(){ renderStats(); renderTable(); renderSummary(); renderEmployeesList(); renderBadges(); renderConfig(); }
+function updateEmployee(empId, field, value){ const emp=state.employees.find(x=>x.id===empId); if(emp) emp[field]=value; }
+function updateShift(empId, day, value){ const base=shifts[value] || shifts.RIPOSO; state.schedule[empId][day]=makeCell(value, '', base.start, base.end, '', presetText(value, base.start, base.end, '', '')); saveState(); renderAll(); }
+function updateCellField(empId, day, field, value){ if(!state.schedule[empId]) state.schedule[empId]=Object.fromEntries(dayNames.map(d=>[d,makeCell()])); if(!state.schedule[empId][day]) state.schedule[empId][day]=makeCell(); state.schedule[empId][day][field]=value; }
+function updateDayNote(empId, day, value){ updateCellField(empId, day, 'note', value); }
+function addEmployee(){ const name=document.getElementById('newName').value.trim(); const email=document.getElementById('newEmail').value.trim(); const employeeNote=document.getElementById('newEmployeeNote').value.trim(); if(!name){ alert('Inserisci almeno il nome'); return; } const id=Math.max(0,...state.employees.map(e=>e.id))+1; state.employees.push({id,name,email,employeeNote}); state.schedule[id]=Object.fromEntries(dayNames.map(d=>[d,makeCell()])); sortEmployeesAZ(); document.getElementById('newName').value=''; document.getElementById('newEmail').value=''; document.getElementById('newEmployeeNote').value=''; saveState(); renderAll(); }
+function deleteEmployee(empId){ if(!confirm('Eliminare questo dipendente?')) return; state.employees=state.employees.filter(emp=>emp.id!==empId); delete state.schedule[empId]; delete state.sentEmails[empId]; saveState(); renderAll(); }
+function exportBackup(){ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='gestionale-turni-backup.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500); }
+function importBackup(file){ const reader=new FileReader(); reader.onload=()=>{ try{ state={...state,...JSON.parse(reader.result)}; saveState(); renderAll(); setMessage('globalMessage','ok','Backup importato.'); }catch(e){ alert('Backup non valido'); } }; reader.readAsText(file); }
+function parseCSV(text){
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(c==='"'){
+      if(q && n==='"'){ cell+='"'; i++; }
+      else q=!q;
+    }else if((c===',' || c===';' || c==='\t') && !q){ row.push(cell.trim()); cell=''; }
+    else if((c==='\n' || c==='\r') && !q){
+      if(c==='\r' && n==='\n') i++;
+      row.push(cell.trim()); cell='';
+      if(row.some(v=>v!=='')) rows.push(row);
+      row=[];
+    }else cell+=c;
+  }
+  row.push(cell.trim());
+  if(row.some(v=>v!=='')) rows.push(row);
+  return rows;
+}
+function normalizeHeader(v){ return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); }
+function importEmployeesCSV(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const rows=parseCSV(String(reader.result||''));
+      if(!rows.length){ alert('CSV vuoto.'); return; }
+      const first=rows[0].map(normalizeHeader);
+      const hasHeader=first.some(h=>['nome','name','dipendente','nominativo','cognomenome','nomecognome'].includes(h)) || first.includes('email') || first.includes('mail');
+      let nameIdx=0, emailIdx=1, noteIdx=2, dataRows=rows;
+      if(hasHeader){
+        nameIdx=first.findIndex(h=>['nome','name','dipendente','nominativo','cognomenome','nomecognome'].includes(h));
+        emailIdx=first.findIndex(h=>['email','mail','indirizzoemail','emailpersonale'].includes(h));
+        noteIdx=first.findIndex(h=>['note','nota','ruolo','mansione','contratto'].includes(h));
+        if(nameIdx<0) nameIdx=0;
+        if(emailIdx<0) emailIdx=1;
+        dataRows=rows.slice(1);
+      }
+      const imported=[];
+      const skipped=[];
+      dataRows.forEach((r,idx)=>{
+        const name=(r[nameIdx]||'').trim();
+        const email=(r[emailIdx]||'').trim();
+        const note=noteIdx>=0 ? (r[noteIdx]||'').trim() : '';
+        if(!name && !email) return;
+        if(!name){ skipped.push(idx+1); return; }
+        imported.push({name,email,employeeNote:note});
+      });
+      if(!imported.length){ alert('Nessun dipendente valido trovato. Usa colonne Nome, Email, Note.'); return; }
+      const replace = confirm(`Trovati ${imported.length} dipendenti.\n\nPremi OK per SOSTITUIRE l’anagrafica attuale.\nPremi Annulla per AGGIUNGERE/AGGIORNARE senza cancellare gli altri.`);
+      if(replace){
+        state.employees=imported.map((e,i)=>({id:i+1,...e}));
+        state.schedule=createDefaultSchedule(state.employees);
+        state.sentEmails={};
+        sortEmployeesAZ();
+      }else{
+        let nextId=Math.max(0,...state.employees.map(e=>e.id))+1;
+        imported.forEach(item=>{
+          const keyEmail=item.email.toLowerCase();
+          const keyName=item.name.toLowerCase();
+          let emp=state.employees.find(e=> item.email && String(e.email||'').toLowerCase()===keyEmail) || state.employees.find(e=>String(e.name||'').toLowerCase()===keyName);
+          if(emp){ emp.name=item.name; emp.email=item.email; emp.employeeNote=item.employeeNote; }
+          else{
+            emp={id:nextId++, ...item};
+            state.employees.push(emp);
+            state.schedule[emp.id]=Object.fromEntries(dayNames.map(d=>[d,makeCell()]));
+          }
+        });
+      }
+      sortEmployeesAZ();
+      saveState(); renderAll();
+      setMessage('globalMessage','ok',`Importazione completata: ${imported.length} dipendenti caricati${skipped.length?`, ${skipped.length} righe saltate`:''}.`);
+    }catch(e){ console.error(e); alert('Errore importazione CSV. Controlla che il file sia salvato come CSV.'); }
+  };
+  reader.readAsText(file);
+}
+function downloadCsvTemplate(){
+  const csv='Nome,Email,Note\nMario Rossi,mario.rossi@email.com,Full time\nLuca Bianchi,luca.bianchi@email.com,Part time\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='modello-dipendenti.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+
+function excelSerialToDate(serial){
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = utc_days * 86400;
+  return new Date(utc_value * 1000);
+}
+function parseDateValue(v){
+  if(v instanceof Date && !isNaN(v)) return v;
+  if(typeof v==='number') return excelSerialToDate(v);
+  const str=String(v||'').trim();
+  if(!str) return null;
+  const m=str.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+  if(m){ const y=Number(m[3].length===2?'20'+m[3]:m[3]); return new Date(y, Number(m[2])-1, Number(m[1])); }
+  const d=new Date(str); return isNaN(d)?null:d;
+}
+function normalizeTimeValue(v){
+  if(v===null || v===undefined) return '';
+  if(typeof v==='number'){
+    const total=Math.round(v*24*60), h=Math.floor(total/60)%24, m=total%60;
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  }
+  const str=String(v).trim().replace('.',':');
+  const m=str.match(/(\d{1,2})[:.]?(\d{2})/);
+  if(!m) return str;
+  return String(Number(m[1])).padStart(2,'0')+':'+m[2];
+}
+function weekdayFromDate(date){ return dayNames[(date.getDay()+6)%7]; }
+function importTurnsRows(rows){
+  if(!rows.length){ alert('File vuoto.'); return; }
+  const headers=Object.keys(rows[0]||{});
+  const findKey=(names)=> headers.find(h=>names.includes(normalizeHeader(h))) || '';
+  const kDate=findKey(['data','giorno','date']);
+  const kName=findKey(['nome','dipendente','nominativo','name']);
+  const kStart=findKey(['inizio','oraentrata','start','dalle']);
+  const kEnd=findKey(['fine','orafine','end','alle']);
+  const kStation=findKey(['postazione','posizione','location','mansione','settore']);
+  const kNote=findKey(['note','nota']);
+  if(!kDate || !kName){ alert('Il file deve avere almeno le colonne Data e Nome.'); return; }
+  const notFound=[]; let imported=0;
+  rows.forEach(row=>{
+    const date=parseDateValue(row[kDate]); const name=String(row[kName]||'').trim();
+    if(!date || !name) return;
+    const emp=state.employees.find(e=>String(e.name||'').trim().toLowerCase()===name.toLowerCase());
+    if(!emp){ if(!notFound.includes(name)) notFound.push(name); return; }
+    const day=weekdayFromDate(date);
+    if(!state.schedule[emp.id]) state.schedule[emp.id]=Object.fromEntries(dayNames.map(d=>[d,makeCell()]));
+    const start=normalizeTimeValue(row[kStart]); const end=normalizeTimeValue(row[kEnd]);
+    const location=String(row[kStation]||'').trim(); const note=String(row[kNote]||'').trim();
+    const type = (!start && !end && /riposo/i.test(location+' '+note)) ? 'RIPOSO' : 'PERSONALIZZATO';
+    const line=[start && end ? `${start}-${end}` : '', location, note].filter(Boolean).join(' | ') || (type==='RIPOSO'?'Riposo':'');
+    const existing=cellToFreeText(state.schedule[emp.id][day]).trim();
+    state.schedule[emp.id][day]=makeCell(type, note, start, end, location, existing ? existing+'\n'+line : line);
+    imported++;
+  });
+  saveState(); renderAll();
+  const msg=`Importati ${imported} turni da Excel${notFound.length?'. Nomi non trovati: '+notFound.slice(0,8).join(', ')+(notFound.length>8?'...':''):'.'}`;
+  setMessage('globalMessage', imported?'ok':'warn', msg);
+  alert(msg);
+}
+function importTurnsExcel(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      if(typeof XLSX==='undefined'){ alert('Libreria Excel non caricata. Controlla internet e Live Server.'); return; }
+      const data=new Uint8Array(reader.result);
+      const wb=XLSX.read(data,{type:'array',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      importTurnsRows(rows);
+    }catch(e){ console.error(e); alert('Errore importazione Excel. Usa colonne: Data, Nome, Inizio, Fine, Postazione, Note.'); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+function downloadTurnsTemplate(){
+  const rows=[
+    ['Data','Nome','Inizio','Fine','Postazione','Note'],
+    ['20/04/2026','BARRACO','04:15','12:30','Pax',''],
+    ['20/04/2026','BOSI','04:00','11:00','Bhs',''],
+    ['21/04/2026','KHEMIRI','05:00','09:15','Pax','prima parte'],
+    ['21/04/2026','KHEMIRI','11:00','15:00','Pax','seconda parte']
+  ];
+  if(typeof XLSX!=='undefined'){
+    const ws=XLSX.utils.aoa_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Turni'); XLSX.writeFile(wb,'modello-turni-icts.xlsx');
+  }else{
+    const csv=rows.map(r=>r.join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='modello-turni-icts.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+}
+
+
+const MATTINALE_CODE='SERVIZI EX ART 2 DM 85/99';
+const MATTINALE_EXCEL_CODE='servizi ex. Art 2 DM 85/99';
+const MATTINALE_SECTIONS=['VARCO DOGANALE','BHS  (baggage handling system )','FORNITURE','FACILITATORE','ARRIVI','VARCHI PASSEGGERI'];
+// Template Excel incorporato rimosso per rendere il file leggero e compatibile con GitHub Pages.
+function activeMattinaleDay(){
+  const sel=document.getElementById('mattinaleDay');
+  return (sel && sel.value) || (state.dayFilter && state.dayFilter!=='ALL' ? state.dayFilter : todayLabel());
+}
+function fillMattinaleDayOptions(){
+  const sel=document.getElementById('mattinaleDay');
+  if(!sel) return;
+  const dates=getCurrentDateInfo();
+  sel.innerHTML=dates.map(d=>`<option value="${d.label}">${dayLabelLong(d.label)} ${d.fullLabel}</option>`).join('');
+  const preferred=state.dayFilter && state.dayFilter!=='ALL' ? state.dayFilter : todayLabel();
+  sel.value=preferred;
+}
+function isNonOperativeText(text){
+  const t=String(text||'').trim().toLowerCase();
+  if(!t) return true;
+  const compact=t.replace(/[^a-z0-9]/g,'');
+  if(['r','rip','riposo','pc','permesso','permessocompensativo','ferie','mal','malattia'].includes(compact)) return true;
+  if(/\b(riposo|ferie|malattia|permesso|compensativo)\b/.test(t)) return true;
+  return false;
+}
+function normalizeMattinaleSection(text){
+  const t=String(text||'').toLowerCase();
+  const compact=t.replace(/[^a-z0-9]/g,'');
+  // Solo nel mattinale: conversione ufficiale delle postazioni/servizi.
+  // Priorità alle diciture specifiche: es. "Varco forniture" deve finire in FORNITURE, non in VARCO DOGANALE.
+  if(/fornitur|\bforn\b/.test(t) || compact.includes('forniture')) return 'FORNITURE';
+  if(/facilitatore|\bfacil\b/.test(t) || compact.includes('facilitatore')) return 'FACILITATORE';
+  if(/arrivi|\barr\b/.test(t) || compact.includes('arrivi')) return 'ARRIVI';
+  if(/dogan/.test(t) || /\bvd\b/.test(t) || compact==='vd' || /varco\s*dogan/.test(t) || /\bvarco\b/.test(t)) return 'VARCO DOGANALE';
+  if(/\bbhs\b|baggage|bagagli/.test(t)) return 'BHS  (baggage handling system )';
+  if(/\bpax\b|passegger|check\s*-?in|gate/.test(t)) return 'VARCHI PASSEGGERI';
+  return '';
+}
+function normalizeTimeRange(raw){
+  return String(raw||'')
+    .replace(/\b(\d{1,2})\.(\d{2})\b/g,'$1:$2')
+    .replace(/\s*[-–]\s*/g,'-')
+    .replace(/\b(\d):(\d{2})/g,'0$1:$2')
+    .trim();
+}
+function minutesFromRange(range){
+  const m=String(range||'').match(/(\d{1,2})[:.](\d{2})\s*[-–]\s*(\d{1,2})[:.](\d{2})/);
+  if(!m) return 99999;
+  return Number(m[1])*60+Number(m[2]);
+}
+function extractMattinaleRowsForDay(day){
+  const groups=Object.fromEntries(MATTINALE_SECTIONS.map(s=>[s,[]]));
+  state.employees.forEach(emp=>{
+    const text=cellToFreeText(state.schedule[emp.id]?.[day]).trim();
+    if(isNonOperativeText(text)) return;
+    const lines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+    lines.forEach(line=>{
+      if(isNonOperativeText(line)) return;
+      const ranges=[...line.matchAll(/\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}/g)].map(m=>normalizeTimeRange(m[0]));
+      if(!ranges.length) return;
+      const section=normalizeMattinaleSection(line) || normalizeMattinaleSection(text);
+      if(!section) return;
+      ranges.forEach(range=>groups[section].push({postazione:section, orario:range, codice:MATTINALE_CODE, nominativo:emp.name}));
+    });
+  });
+  MATTINALE_SECTIONS.forEach(sec=>groups[sec].sort((a,b)=>minutesFromRange(a.orario)-minutesFromRange(b.orario) || String(a.nominativo).localeCompare(String(b.nominativo),'it')));
+  return groups;
+}
+function mattinaleDateText(day){
+  const d=getCurrentDateInfo().find(x=>x.label===day);
+  return d ? `${dayLabelLong(day)} ${d.fullLabel}` : dayLabelLong(day);
+}
+function renderMattinalePreview(){
+  const day=activeMattinaleDay();
+  const groups=extractMattinaleRowsForDay(day);
+  const rows=[];
+  rows.push(`<tr class="title-row"><td colspan="4">ICTS Italia - Elenco Servizi Giornaliero - ${escapeHtml(mattinaleDateText(day))}</td></tr>`);
+  rows.push(`<tr class="code-row"><td colspan="4">${MATTINALE_CODE}</td></tr>`);
+  rows.push('<tr><th>POSTAZIONE</th><th>ORARIO</th><th>CODICE DI SERVIZIO</th><th>NOMINATIVO</th></tr>');
+  MATTINALE_SECTIONS.forEach(sec=>{
+    rows.push(`<tr class="section-row"><td colspan="4">${escapeHtml(sec)}</td></tr>`);
+    if(groups[sec].length){
+      groups[sec].forEach(r=>rows.push(`<tr><td>${escapeHtml(r.postazione)}</td><td>${escapeHtml(r.orario)}</td><td>${escapeHtml(r.codice)}</td><td>${escapeHtml(r.nominativo)}</td></tr>`));
+    }else rows.push('<tr class="empty-row"><td colspan="4">Nessun servizio operativo inserito</td></tr>');
+  });
+  document.getElementById('mattinalePreview').innerHTML=`<table class="mattinale-sheet">${rows.join('')}</table>`;
+}
+function openMattinale(){
+  fillMattinaleDayOptions();
+  renderMattinalePreview();
+  document.getElementById('mattinaleDialog').showModal();
+}
+
+function getDateObjectForDay(day){
+  const monday=mondayForOffset(state.weekOffset||0);
+  const idx=dayNames.indexOf(day);
+  const d=new Date(monday); d.setDate(monday.getDate()+idx); return d;
+}
+function excelDateTitle(day){
+  const mesi=['GENNAIO','FEBBRAIO','MARZO','APRILE','MAGGIO','GIUGNO','LUGLIO','AGOSTO','SETTEMBRE','OTTOBRE','NOVEMBRE','DICEMBRE'];
+  const d=getDateObjectForDay(day);
+  return `${String(d.getDate()).padStart(2,'0')}  ${mesi[d.getMonth()]} ${d.getFullYear()}`;
+}
+function excelFileDate(day){
+  const d=getDateObjectForDay(day);
+  const mesi=['GENNAIO','FEBBRAIO','MARZO','APRILE','MAGGIO','GIUGNO','LUGLIO','AGOSTO','SETTEMBRE','OTTOBRE','NOVEMBRE','DICEMBRE'];
+  return `${d.getDate()} ${mesi[d.getMonth()]} ${d.getFullYear()}`;
+}
+function splitEmployeeName(fullName){
+  const parts=String(fullName||'').trim().replace(/\s+/g,' ').split(' ').filter(Boolean);
+  if(parts.length<=1) return {cognome:parts[0]||'', nome:''};
+  return {cognome:parts[0], nome:parts.slice(1).join(' ')};
+}
+function formatMattinaleTimeForExcel(timeText){
+  const m=String(timeText||'').match(/(\d{1,2})[:.](\d{2})/);
+  if(!m) return '';
+  const h=Number(m[1]);
+  const mm=m[2];
+  if(h===0) return `00.${mm}`;
+  return `${h}.${mm}`;
+}
+function buildMattinaleExcelRows(day){
+  const groups=extractMattinaleRowsForDay(day);
+  const rows=[];
+  MATTINALE_SECTIONS.forEach(sec=>{
+    groups[sec].forEach(item=>{
+      const m=String(item.orario||'').match(/(\d{1,2})[:.](\d{2})\s*[-–]\s*(\d{1,2})[:.](\d{2})/);
+      if(!m) return;
+      const n=splitEmployeeName(item.nominativo);
+      rows.push({
+        postazione: sec,
+        inizio: formatMattinaleTimeForExcel(`${m[1]}:${m[2]}`),
+        fine: formatMattinaleTimeForExcel(`${m[3]}:${m[4]}`),
+        codice: MATTINALE_EXCEL_CODE,
+        cognome: n.cognome,
+        nome: n.nome
+      });
+    });
+  });
+  return rows;
+}
+function cloneStyle(style){ return JSON.parse(JSON.stringify(style || {})); }
+async function exportMattinaleExcel(){
+  const day=activeMattinaleDay();
+  const rows=buildMattinaleExcelRows(day);
+
+  if(typeof XLSX==='undefined'){
+    alert('Libreria Excel non caricata. Controlla la connessione internet e ricarica la pagina.');
+    return;
+  }
+
+  const header = [
+    ['ICTS Italia - Elenco Servizi Giornaliero - ' + excelFileDate(day)],
+    [MATTINALE_CODE],
+    [],
+    ['POSTAZIONE','INIZIO','FINE','CODICE DI SERVIZIO','COGNOME','NOME']
+  ];
+
+  const data = rows.map(r => [
+    r.postazione,
+    r.inizio,
+    r.fine,
+    r.codice,
+    r.cognome,
+    r.nome
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet([...header, ...data]);
+  ws['!cols'] = [
+    {wch: 34}, {wch: 10}, {wch: 10}, {wch: 34}, {wch: 22}, {wch: 22}
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'MATTINALE');
+  XLSX.writeFile(wb, `${excelFileDate(day)} - Elenco Servizi Giornaliero - MATTINALE ICTS VRN.xlsx`);
+}
+
+function printMattinale(){
+  document.body.classList.add('print-mattinale');
+  window.print();
+  setTimeout(()=>document.body.classList.remove('print-mattinale'),500);
+}
+
+function resetState(){
+  if(!confirm('Vuoi resettare solo i turni della settimana? Dipendenti, email e configurazione EmailJS resteranno salvati.')) return;
+  state.schedule=createDefaultSchedule(state.employees);
+  state.sentEmails={};
+  state.bulkShift='MATTINA';
+  saveState();
+  renderAll();
+  setMessage('globalMessage','warn','Settimana resettata: turni riportati allo schema base. Dipendenti, email e configurazione invio sono rimasti salvati.');
+}
+
+// events
+window.sendEmail = sendEmail;
+window.previewEmail = previewEmail;
+window.deleteEmployee = deleteEmployee;
+document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+document.getElementById('printWeekBtn').addEventListener('click',()=>window.print());
+document.getElementById('mattinaleBtn').addEventListener('click',openMattinale);
+document.getElementById('exportMattinaleExcelBtn').addEventListener('click',()=>{ fillMattinaleDayOptions(); exportMattinaleExcel(); });
+document.getElementById('closeMattinaleDialog').addEventListener('click',()=>document.getElementById('mattinaleDialog').close());
+document.getElementById('refreshMattinaleBtn').addEventListener('click',renderMattinalePreview);
+document.getElementById('downloadMattinaleBtn').addEventListener('click',exportMattinaleExcel);
+document.getElementById('printMattinaleBtn').addEventListener('click',printMattinale);
+document.getElementById('mattinaleDay').addEventListener('change',renderMattinalePreview);
+document.getElementById('homeBtn').addEventListener('click',()=>{ window.scrollTo({top:0,behavior:'smooth'}); setMessage('globalMessage','muted','Sei tornato alla pagina iniziale. Nessun dato è stato modificato.'); });
+document.getElementById('sortEmployeesBtn').addEventListener('click',()=>{ sortEmployeesAZ(); saveState(); renderAll(); setMessage('globalMessage','ok','Dipendenti ordinati alfabeticamente dalla A alla Z.'); });
+document.getElementById('searchInput').addEventListener('input',e=>{ state.search=e.target.value; renderAll(); });
+document.getElementById('stationFilter').addEventListener('input',e=>{ state.stationFilter=e.target.value; renderAll(); });
+document.getElementById('hoursFilter').value=state.hoursFilter || 'ALL';
+document.getElementById('hoursFilter').addEventListener('change',e=>{ state.hoursFilter=e.target.value; saveState(); renderAll(); });
+document.getElementById('dayFilter').value=state.dayFilter || 'ALL';
+document.getElementById('dayFilter').addEventListener('change',e=>{ state.dayFilter=e.target.value; saveState(); renderAll(); });
+document.getElementById('prevDayBtn').addEventListener('click',()=>moveDayFilter(-1));
+document.getElementById('nextDayBtn').addEventListener('click',()=>moveDayFilter(1));
+document.getElementById('bulkShift').innerHTML=shiftKeys.map(k=>`<option value="${k}">${shifts[k].label}</option>`).join('');
+document.getElementById('bulkShift').value=state.bulkShift;
+document.getElementById('bulkShift').addEventListener('change',e=>{ state.bulkShift=e.target.value; });
+document.getElementById('applyAllBtn').addEventListener('click',()=>{ filteredEmployees().forEach(emp=>dayNames.forEach(d=>{ const base=shifts[state.bulkShift] || shifts.RIPOSO; state.schedule[emp.id][d]=makeCell(state.bulkShift,'',base.start,base.end,'',presetText(state.bulkShift,base.start,base.end,'','')); })); saveState(); renderAll(); });
+document.getElementById('sendAllVisibleBtn').addEventListener('click',sendAllVisible);
+document.getElementById('prevWeekBtn').addEventListener('click',()=>changeWeek(-1));
+document.getElementById('nextWeekBtn').addEventListener('click',()=>changeWeek(1));
+document.getElementById('manageEmployeesBtn').addEventListener('click',()=>document.getElementById('employeesDialog').showModal());
+document.getElementById('closeEmployeesDialog').addEventListener('click',()=>document.getElementById('employeesDialog').close());
+document.getElementById('addEmployeeBtn').addEventListener('click',addEmployee);
+document.getElementById('exportBtn').addEventListener('click',exportBackup);
+document.getElementById('importFile').addEventListener('change',e=>{ if(e.target.files[0]) importBackup(e.target.files[0]); e.target.value=''; });
+document.getElementById('employeesCsvFile').addEventListener('change',e=>{ if(e.target.files[0]) importEmployeesCSV(e.target.files[0]); e.target.value=''; });
+document.getElementById('turnsExcelFile').addEventListener('change',e=>{ if(e.target.files[0]) importTurnsExcel(e.target.files[0]); e.target.value=''; });
+document.getElementById('turnsTemplateBtn').addEventListener('click',downloadTurnsTemplate);
+document.getElementById('csvTemplateBtn').addEventListener('click',downloadCsvTemplate);
+document.getElementById('resetBtn').addEventListener('click',resetState);
+document.getElementById('configBtn').addEventListener('click',()=>{ renderConfig(); document.getElementById('configDialog').showModal(); });
+document.getElementById('closeConfigDialog').addEventListener('click',()=>document.getElementById('configDialog').close());
+document.getElementById('saveConfigBtn').addEventListener('click',()=>{ state.emailConfig.publicKey=document.getElementById('cfgPublicKey').value.trim(); state.emailConfig.serviceId=document.getElementById('cfgServiceId').value.trim(); state.emailConfig.templateId=document.getElementById('cfgTemplateId').value.trim(); saveState(); renderAll(); testConfiguration(); });
+document.getElementById('testConfigBtn').addEventListener('click',testConfiguration);
+document.getElementById('sendTestBtn').addEventListener('click',sendTestEmail);
+document.getElementById('closePreviewDialog').addEventListener('click',()=>document.getElementById('previewDialog').close());
+document.getElementById('previewCloseBtn').addEventListener('click',()=>document.getElementById('previewDialog').close());
+document.getElementById('previewSendBtn').addEventListener('click',()=>{ if(previewEmployeeId){ document.getElementById('previewDialog').close(); sendEmail(previewEmployeeId); } });
+
+document.addEventListener('input',(e)=>{
+  const t=e.target, id=Number(t.dataset.id || 0);
+  if(t.dataset.role==='emp-name') updateEmployee(id,'name',t.value);
+  if(t.dataset.role==='emp-email') updateEmployee(id,'email',t.value);
+  if(t.dataset.role==='emp-note' || t.dataset.role==='emp-note-main') updateEmployee(id,'employeeNote',t.value);
+  if(t.dataset.role==='day-note') updateDayNote(id,t.dataset.day,t.value);
+  if(t.dataset.role==='free-text') updateCellField(id,t.dataset.day,'freeText',t.value);
+  if(t.dataset.role==='start-time') updateCellField(id,t.dataset.day,'start',t.value);
+  if(t.dataset.role==='end-time') updateCellField(id,t.dataset.day,'end',t.value);
+  if(t.dataset.role==='location') updateCellField(id,t.dataset.day,'location',t.value);
+});
+document.addEventListener('change',(e)=>{
+  const t=e.target, id=Number(t.dataset.id || 0);
+  if(t.dataset.role==='shift') updateShift(id,t.dataset.day,t.value);
+  if(['emp-name','emp-email','emp-note','emp-note-main','day-note','free-text','start-time','end-time','location'].includes(t.dataset.role)){ saveState(); renderAll(); }
+});
+
+document.addEventListener('keydown',(e)=>{
+  const t=e.target;
+  if(t && t.dataset && t.dataset.role==='free-text' && (e.key==='Tab' || (e.key==='Enter' && !e.shiftKey))){
+    e.preventDefault();
+    const cells=[...document.querySelectorAll('textarea[data-role="free-text"]')];
+    const idx=cells.indexOf(t);
+    const step=e.shiftKey?-1:1;
+    const next=cells[idx+step];
+    if(next){ next.focus(); next.select(); }
+  }
+});
+
+document.addEventListener('focusout',(e)=>{
+  const t=e.target;
+  if(t.dataset.role==='free-text'){
+    const expanded=quickExpandText(t.value);
+    if(expanded!==t.value){ t.value=expanded; updateCellField(Number(t.dataset.id||0), t.dataset.day, 'freeText', expanded); }
+  }
+  if(['emp-name','emp-email','emp-note','emp-note-main','day-note','free-text','start-time','end-time','location'].includes(t.dataset.role)){ saveState(); renderAll(); }
+});
+let firebaseSyncStarted = false;
+let applyingRemoteState = false;
+let lastFirebasePayload = '';
+
+function cleanStateForFirebase(){
+  return JSON.parse(JSON.stringify(state));
+}
+
+function uploadStateOnline(){
+  if(applyingRemoteState) return;
+  if(!window.db || !window.ref || !window.set) return;
+  try{
+    const payload = cleanStateForFirebase();
+    const payloadText = JSON.stringify(payload);
+    if(payloadText === lastFirebasePayload) return;
+    lastFirebasePayload = payloadText;
+    window.set(window.ref(window.db, 'gestionale_turni/christian/state'), payload)
+      .catch(err=>console.error('Errore salvataggio Firebase:', err));
+  }catch(err){ console.error('Errore preparazione Firebase:', err); }
+}
+
+function applyOnlineState(onlineState){
+  if(!onlineState || typeof onlineState !== 'object') return;
+  applyingRemoteState = true;
+  state = {...state, ...onlineState};
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  ensureWeekArchive();
+  loadActiveWeek();
+  normalizeSchedule();
+  sortEmployeesAZ();
+  applyTheme();
+  renderAll();
+  applyingRemoteState = false;
+}
+
+function startFirebaseSync(){
+  if(firebaseSyncStarted) return;
+  if(!window.db || !window.ref || !window.onValue) return;
+  firebaseSyncStarted = true;
+  window.onValue(window.ref(window.db, 'gestionale_turni/christian/state'), snapshot=>{
+    const onlineState = snapshot.val();
+    if(!onlineState){ uploadStateOnline(); return; }
+    const text = JSON.stringify(onlineState);
+    if(text === lastFirebasePayload) return;
+    lastFirebasePayload = text;
+    applyOnlineState(onlineState);
+    setMessage('globalMessage','ok','Sincronizzazione online attiva: PC e telefono sono collegati.');
+  }, err=>{
+    console.error('Errore lettura Firebase:', err);
+    setMessage('globalMessage','err','Errore sincronizzazione Firebase. Controlla le regole del Realtime Database.');
+  });
+}
+
+window.startFirebaseSync = startFirebaseSync;
+
+loadState();
+if(!state.dayFilter) state.dayFilter='ALL';
+if(!state.hoursFilter) state.hoursFilter='ALL';
+if(!state.theme) state.theme=localStorage.getItem('gestionaleTheme') || 'auto';
+applyTheme();
+normalizeSchedule();
+sortEmployeesAZ();
+renderAll();
+saveState();
+if(location.protocol==='file:') setMessage('globalMessage','warn','Stai usando file://. Per evitare blocchi del browser è meglio aprire questo file con Live Server in VS Code.'); else setMessage('globalMessage','muted','Statistiche, email inviate e turni sono riferiti solo alla settimana attiva visualizzata.');
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBJxJCxsaACkIW1d7thAi9d8aqQsk2-thY",
+    authDomain: "gestionale-turni-76190.firebaseapp.com",
+    projectId: "gestionale-turni-76190",
+    storageBucket: "gestionale-turni-76190.firebasestorage.app",
+    messagingSenderId: "1003864928461",
+    appId: "1:1003864928461:web:e000df20986f7ffd7b3984",
+    databaseURL: "https://gestionale-turni-76190-default-rtdb.firebaseio.com"
+  };
+
+  try{
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    window.db = db;
+    window.ref = ref;
+    window.set = set;
+    window.onValue = onValue;
+    if(typeof window.startFirebaseSync === 'function') window.startFirebaseSync();
+  }catch(err){
+    console.error('Errore inizializzazione Firebase:', err);
+  }
+</script>
+</body>
+</html>
