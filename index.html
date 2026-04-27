@@ -1330,5 +1330,27 @@ renderAll();
 saveState();
 if(location.protocol==='file:') setMessage('globalMessage','warn','Stai usando file://. Per evitare blocchi del browser è meglio aprire questo file con Live Server in VS Code.'); else setMessage('globalMessage','muted','Statistiche, email inviate e turni sono riferiti solo alla settimana attiva visualizzata.');
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBJxJCxsaACkIW1d7thAi9d8aqQsk2-thY",
+    authDomain: "gestionale-turni-76190.firebaseapp.com",
+    projectId: "gestionale-turni-76190",
+    storageBucket: "gestionale-turni-76190.firebasestorage.app",
+    messagingSenderId: "1003864928461",
+    appId: "1:1003864928461:web:e000df20986f7ffd7b3984",
+    databaseURL: "https://gestionale-turni-76190-default-rtdb.europe-west1.firebasedatabase.app"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.db = db;
+  window.ref = ref;
+  window.set = set;
+  window.onValue = onValue;
+</script>
 </body>
 </html>
